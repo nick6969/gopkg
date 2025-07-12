@@ -67,3 +67,17 @@ func MustParse(s string) UUID {
 	u := uuid.MustParse(s)
 	return UUID{value: u}
 }
+
+// encoding.BinaryMarshaler and BinaryUnmarshaler
+func (u UUID) MarshalBinary() ([]byte, error) {
+	return u.value.MarshalBinary()
+}
+
+func (u *UUID) UnmarshalBinary(data []byte) error {
+	uu, err := uuid.FromBytes(data)
+	if err != nil {
+		return err
+	}
+	*u = UUID{value: uu}
+	return nil
+}

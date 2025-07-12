@@ -35,12 +35,11 @@ func (j Container[T]) Value() (driver.Value, error) {
 	return val, nil
 }
 
-// MarshalJSON -> to JSON
+// encoding.BinaryMarshaler and BinaryUnmarshaler
 func (j Container[T]) MarshalBinary() ([]byte, error) {
 	return json.Marshal(j.RawValue)
 }
 
-// UnmarshalBinary -> from Binary
 func (j *Container[T]) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, &j.RawValue)
 }
