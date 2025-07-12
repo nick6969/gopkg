@@ -7,19 +7,19 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
-type SingleFlightGroup interface {
+type Group interface {
 	Do(key string, fn func() (interface{}, error)) (v interface{}, err error, shared bool)
 	DoChan(key string, fn func() (interface{}, error)) <-chan singleflight.Result
 }
 
-type SingleFlightJob[T any] struct {
+type Job[T any] struct {
 	WorkIdentify string
 	CacheGetter  func() (*T, error)
 	CacheSetter  func(*T) error
 	OnceGetter   func() (*T, error)
 }
 
-func (job SingleFlightJob[T]) DoWith(engine SingleFlightGroup) (*T, error) {
+func (job Job[T]) DoWith(engine Group) (*T, error) {
 	v, e := job.CacheGetter()
 	if e == nil {
 		return v, nil
@@ -51,7 +51,7 @@ func (job SingleFlightJob[T]) DoWith(engine SingleFlightGroup) (*T, error) {
 	return value, nil
 }
 
-func (job SingleFlightJob[T]) DoWithTimeout(engine SingleFlightGroup, timeout time.Duration) (*T, error) {
+func (job Job[T]) DoWithTimeout(engine Group, timeout time.Duration) (*T, error) {
 	v, e := job.CacheGetter()
 	if e == nil {
 		return v, nil
